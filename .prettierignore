@@ -1,0 +1,15 @@
+# Dependencies and generated output
+node_modules/
+.next/
+out/
+build/
+coverage/
+next-env.d.ts
+*.tsbuildinfo
+
+# Generated or machine-managed files
+package-lock.json
+AGENTS.md
+
+# Local environment variables
+.env*
