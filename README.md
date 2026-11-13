@@ -1,120 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Abricot — Gestion de tâches
 
-## Structure du projet (JavaScript)
+Application Next.js 16 / React en JavaScript, avec App Router et Tailwind CSS 4.
+
+## Démarrage
+
+```bash
+npm ci
+npm run dev
+```
+
+L'application est disponible sur [http://localhost:3000](http://localhost:3000).
+
+## Pages d'authentification
+
+| URL            | Comportement                                                    |
+| -------------- | --------------------------------------------------------------- |
+| `/`            | Redirige vers `/connexion`, le point d'entrée de l'application. |
+| `/connexion`   | Formulaire de connexion et lien vers l'inscription.             |
+| `/inscription` | Formulaire d'inscription et lien vers la connexion.             |
+
+Les deux pages partagent le même layout et les mêmes composants de formulaire.
+Les photos de `public/images` et le logo de `public/logos` sont ceux des maquettes.
+Les titres utilisent **Manrope, 700, 40 px, interligne 100 %, sans espacement ajouté**.
+La police est chargée avec `next/font` et servie par l'application.
+
+À cette étape, seule l'interface est réalisée : les champs obligatoires et le
+format de l'email sont validés dans le navigateur, avec des messages en français.
+La soumission affiche un état explicite d'indisponibilité ; elle ne crée aucun
+compte, aucune session et n'envoie ni ne conserve les identifiants.
+Le bouton de mot de passe oublié indique également son indisponibilité.
+Les règles de mot de passe, la validation serveur et les appels réseau seront
+ajoutés lors du branchement de l'API d'authentification.
+
+## Structure
 
 ```text
 public/
-├── favicon.ico
-├── images/
 ├── fonts/
-└── *.svg
+├── images/                   # connexion.jpg et register.jpg
+└── logos/                    # abricotLogo.svg
 src/
 ├── app/
-│   ├── layout.js              # Layout racine et styles globaux
-│   ├── not-found.js           # 404 pour les URL inconnues
-│   ├── (routes)/              # Groupe sans effet sur les URL
-│   │   ├── page.js            # Page d'accueil : /
-│   │   ├── layout.js          # Layout partagé de ce groupe
+│   ├── layout.js             # Langue française, police et lien d'évitement
+│   ├── not-found.js
+│   ├── (routes)/
+│   │   ├── page.js           # Redirection de l'entrée de l'application
+│   │   ├── connexion/page.js
+│   │   ├── inscription/page.js
+│   │   ├── layout.js
 │   │   ├── loading.js
 │   │   ├── error.js
 │   │   └── not-found.js
-│   └── api/
-│       └── hello/
-│           └── route.js       # GET /api/hello
+│   └── api/hello/route.js
 ├── components/
+│   ├── auth/
+│   │   ├── AuthLayout.js     # Structure commune aux pages d'authentification
+│   │   └── AuthForm.js       # Validation et états des deux formulaires
+│   ├── BrandLogo.js
+│   ├── Button.js             # Variantes principale et lien
+│   ├── FormField.js          # Label, champ, aide et message d'erreur
+│   ├── TextLink.js
+│   ├── Card.js
 │   ├── Navbar.js
-│   ├── Footer.js
-│   ├── Button.js
-│   └── Card.js
-├── lib/
-│   ├── db.js                  # Emplacement pour le futur client de base de données
-│   ├── utils.js
-│   └── constants.js
-├── styles/
-│   └── globals.css
-└── types/
-    └── index.js              # Types documentés avec JSDoc
-.env.local                   # Variables locales, ignorées par Git
-jsconfig.json                # Alias @/* vers src/*
-next.config.mjs
-eslint.config.mjs
-package.json
+│   └── Footer.js
+├── lib/                      # Constantes, routes, utilitaires, futur client DB
+├── styles/globals.css        # Tailwind et variables du thème
+└── types/index.js            # Types documentés avec JSDoc
 ```
 
-Les composants réutilisables sont prêts à être importés ; la page d'accueil
-existante est conservée. `db.js` et `constants.js` sont des emplacements à
-compléter, sans connexion à une base de données pour le moment.
+L'alias `@/*` pointe vers `src/*`. Les variables locales restent à la racine dans
+`.env.local`, ignoré par Git. Aucun client de base de données n'est encore configuré.
 
-Exemple d'import : `import Button from "@/components/Button";`.
-Le groupe `(routes)` ne modifie pas les URL : sa page d'accueil reste `/`.
-Le layout racine importe `@/styles/globals.css` et référence `/favicon.ico`.
-Le fichier `src/app/not-found.js` réutilise la page 404 du groupe pour les URL inconnues.
+## Principes à respecter pour tout le projet
 
-Les fichiers `.tsx` / `.ts` de l'image sont remplacés par des `.js`.
-Le projet conserve sa configuration Next.js 16 et Tailwind CSS 4 existante :
-aucun `tsconfig.json`, `tailwind.config.ts` ou fichier PostCSS supplémentaire
-n'est nécessaire avec l'intégration Tailwind/Turbopack déjà configurée.
-Les fichiers `.gitkeep` conservent les dossiers d'images et de polices vides dans Git.
+- Interface responsive sur ordinateurs, tablettes et mobiles, sans hauteur fixe
+  qui empêcherait le défilement lorsque le contenu ou le zoom augmente.
+- Objectif d'accessibilité **WCAG 2.1 niveau AA au minimum** : HTML sémantique,
+  navigation clavier, focus visible, labels explicites, erreurs associées aux
+  champs et annoncées, contrastes suffisants et contenu utilisable à 200 % de zoom.
+- Code JavaScript lisible, fonctions nommées explicitement, composants réutilisables
+  et commentaires limités aux décisions qui nécessitent une explication.
+- Tailwind pour les styles, avec les couleurs et la typographie centralisées.
 
-## Environnement de développement
+Sur les écrans d'authentification, la photo décorative occupe la partie droite à
+partir de 768 px. Sur mobile, elle est masquée pour laisser toute la place au
+formulaire. Les petits liens orange sont plus foncés que les titres pour garantir
+leur contraste ; les bordures des champs restent visibles.
+Ces choix ne remplacent pas un audit complet de conformité WCAG.
 
-Installer les dépendances avec `npm ci`, puis démarrer le projet avec `npm run dev`.
+## Qualité et formatage
 
-| Commande               | Usage                                                                                         |
-| ---------------------- | --------------------------------------------------------------------------------------------- |
-| `npm run lint`         | Vérifier le code avec les règles Next.js, React et React Hooks (aucun avertissement accepté). |
-| `npm run lint:fix`     | Appliquer les corrections automatiques disponibles dans ESLint.                               |
-| `npm run format`       | Formater les fichiers avec Prettier.                                                          |
-| `npm run format:check` | Vérifier le formatage sans modifier les fichiers.                                             |
-| `npm run check`        | Exécuter les vérifications ESLint et Prettier.                                                |
-| `npm run build`        | Vérifier la compilation de production.                                                        |
+| Commande               | Usage                                                                 |
+| ---------------------- | --------------------------------------------------------------------- |
+| `npm run lint`         | Vérifier les règles Next.js, React et React Hooks sans avertissement. |
+| `npm run lint:fix`     | Appliquer les corrections ESLint disponibles.                         |
+| `npm run format`       | Formater les fichiers avec Prettier.                                  |
+| `npm run format:check` | Vérifier le formatage sans modifier les fichiers.                     |
+| `npm run check`        | Exécuter les contrôles ESLint et Prettier.                            |
+| `npm run build`        | Compiler pour la production.                                          |
+| `npm start`            | Démarrer le serveur de production après un build.                     |
 
-ESLint utilise la configuration plate `eslint.config.mjs`, avec
-`eslint-config-next` aligné sur Next.js 16.4.5. `eslint-config-prettier`
-désactive les règles de formatage qui pourraient entrer en conflit avec Prettier.
-Le lint s'exécute séparément du build Next.js ; lancer `npm run check` avant un commit.
+La configuration ESLint est alignée sur Next.js 16.4.5. `eslint-config-prettier`
+prévient les conflits de formatage. Prettier impose 2 espaces, des guillemets
+doubles, des points-virgules et des fins de ligne LF ; `.editorconfig` partage ces
+conventions avec les éditeurs. Les sorties générées, `package-lock.json` et les
+fichiers d'environnement sont exclus du formatage.
 
-Prettier est configuré dans `.prettierrc.json` : indentation de 2 espaces,
-guillemets doubles, points-virgules et fins de ligne LF. `.editorconfig`
-reprend ces conventions pour les éditeurs compatibles. Les fichiers générés,
-le lockfile, `AGENTS.md` et les variables d'environnement sont exclus du formatage.
-
-Dans VS Code, installer les extensions recommandées **ESLint**
-(`dbaeumer.vscode-eslint`) et **Prettier** (`esbenp.prettier-vscode`).
-Les réglages du projet activent le formatage Prettier à l'enregistrement et
-les corrections ESLint lors d'un enregistrement explicite.
-
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `src/app/(routes)/page.js`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Dans VS Code, installer les extensions recommandées **ESLint** et **Prettier**.
+Les réglages du projet activent le formatage et les corrections ESLint lors d'un
+enregistrement explicite.
